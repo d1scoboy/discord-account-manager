@@ -8,4 +8,13 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DiscoBox.Ui\DiscoBox.Ui.csproj" />
+    <ProjectReference Include="..\DiscoBox.Core\DiscoBox.Core.csproj" />
+  </ItemGroup>
+
 </Project>
