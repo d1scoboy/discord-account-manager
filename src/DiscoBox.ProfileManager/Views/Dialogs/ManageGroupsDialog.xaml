@@ -1,0 +1,70 @@
+<Window x:Class="DiscoBox.ProfileManager.Views.Dialogs.ManageGroupsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Style="{StaticResource DialogWindow}"
+        WindowStartupLocation="CenterOwner"
+        Title="Groups and tags" Width="560" SizeToContent="Height">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="44" ResizeBorderThickness="0"
+                            GlassFrameThickness="1" CornerRadius="0"
+                            UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+    <Grid Margin="20,14,20,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <TextBlock Text="Groups and tags" Style="{StaticResource Text.SectionTitle}" VerticalAlignment="Center"/>
+            <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" HorizontalAlignment="Right"
+                    shell:WindowChrome.IsHitTestVisibleInChrome="True" Click="Close_Click"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Groups" Style="{StaticResource Text.SectionTitle}" FontSize="13"/>
+                <ListBox ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}" Height="170" Margin="0,8,0,0"/>
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{Binding NewGroup, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Grid.Column="2" Content="Add" Command="{Binding AddGroupCommand}"/>
+                </Grid>
+                <Button Style="{StaticResource GhostButton}" Content="Remove selected"
+                        HorizontalAlignment="Left" Margin="0,8,0,0" Command="{Binding RemoveGroupCommand}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Tags" Style="{StaticResource Text.SectionTitle}" FontSize="13"/>
+                <ListBox ItemsSource="{Binding Tags}" SelectedItem="{Binding SelectedTag}" Height="170" Margin="0,8,0,0"/>
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{Binding NewTag, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Grid.Column="2" Content="Add" Command="{Binding AddTagCommand}"/>
+                </Grid>
+                <Button Style="{StaticResource GhostButton}" Content="Remove selected"
+                        HorizontalAlignment="Left" Margin="0,8,0,0" Command="{Binding RemoveTagCommand}"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button Style="{StaticResource PrimaryButton}" Content="Done" Click="Close_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
