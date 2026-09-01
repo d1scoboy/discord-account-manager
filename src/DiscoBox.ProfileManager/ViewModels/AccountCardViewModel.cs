@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DiscoBox.Core.Models;
+using DiscoBox.ProfileManager.Services;
 
 namespace DiscoBox.ProfileManager.ViewModels;
 
@@ -10,7 +12,9 @@ public partial class AccountCardViewModel : ObservableObject
 
     public AccountRowViewModel Row { get; }
 
-    public ObservableCollection<string> Groups => page.Groups;
+    public Account Model => Row.Model;
+
+    public List<string> Groups => AppServices.Groups.Groups;
 
     public ObservableCollection<HistoryItemViewModel> Log => Row.History;
 
@@ -51,28 +55,30 @@ public partial class AccountCardViewModel : ObservableObject
     {
         Row = row;
         this.page = page;
-        token = row.TokenMasked;
-        group = row.Group;
-        tags = row.Tags;
-        notes = row.Notes;
-        proxyMode = row.ProxyLabel == "no proxy" ? "Random from pool" : "Manual";
-        proxyUrl = row.ProxyLabel == "no proxy" ? "" : row.ProxyLabel;
+        token = row.Model.Token;
+        email = row.Model.Email ?? "";
+        password = row.Model.Password ?? "";
+        group = row.Model.Group;
+        tags = string.Join(", ", row.Model.Tags);
+        notes = row.Model.Notes;
+        proxyMode = row.Model.ProxyMode == Core.Models.ProxyMode.Manual ? "Manual" : "Random from pool";
+        proxyUrl = row.Model.ProxyUrl ?? "";
         selectedTab = startTab;
     }
 
     partial void OnProxyModeChanged(string value) => OnPropertyChanged(nameof(IsManual));
 
     [RelayCommand]
-    private Task CheckAsync() => page.CheckAccountsAsync(new[] { Row });
+    private Task CheckAsync() => page.RunJobAsync("check_status", new[] { Row });
 
     [RelayCommand]
-    private void AssignRandom() => page.AssignRandomProxy(new[] { Row });
+    private void OpenInChrome() => page.OpenAccountFor(Row);
 
     [RelayCommand]
     private void SetProxy() => page.SetProxyFor(new[] { Row });
 
     [RelayCommand]
-    private void ReleaseProxy() => page.ReleaseProxy(new[] { Row });
+    private void UseRandom() => page.UseRandomPool(new[] { Row });
 
     [RelayCommand]
     private void Delete()
@@ -86,21 +92,33 @@ public partial class AccountCardViewModel : ObservableObject
     [RelayCommand]
     private void Save()
     {
-        Row.Group = Group;
-        Row.Tags = Tags;
-        Row.Notes = Notes;
         if (Token.Trim().Length >= 20)
         {
-            Row.TokenMasked = AccountsPageViewModel.MaskToken(Token.Trim());
+            Model.Token = Token.Trim();
         }
+
+        Model.Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim();
+        Model.Password = string.IsNullOrWhiteSpace(Password) ? null : Password;
+        Model.Group = Group;
+        Model.Tags = AccountsPageViewModel.ParseTags(Tags);
+        Model.Notes = Notes;
 
         if (IsManual && ProxyUrl.Trim().Length > 0)
         {
-            Row.ProxyLabel = ProxyUrl.Trim();
+            Model.ProxyMode = Core.Models.ProxyMode.Manual;
+            Model.ProxyUrl = ProxyUrl.Trim();
+        }
+        else
+        {
+            Model.ProxyMode = Core.Models.ProxyMode.Random;
+            Model.ProxyUrl = null;
         }
 
-        page.FooterMessage = $"Account {Row.Username} updated";
+        AppServices.Masker.Register(Model.Token, Model.Password);
+        AppServices.PersistAccounts();
+        Row.Sync();
         page.RefreshView();
+        page.FooterMessage = $"Account {Model.Username} updated";
         Close?.Invoke();
     }
 }
