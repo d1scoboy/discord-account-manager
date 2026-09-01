@@ -2,15 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
-  <SolidColorBrush x:Key="Brush.Window" Color="#D9131417"/>
+  <SolidColorBrush x:Key="Brush.Window" Color="#FF131417"/>
   <SolidColorBrush x:Key="Brush.Panel" Color="#591C1E22"/>
   <SolidColorBrush x:Key="Brush.PanelStrong" Color="#8C202226"/>
   <SolidColorBrush x:Key="Brush.Input" Color="#40101214"/>
   <SolidColorBrush x:Key="Brush.Hover" Color="#14FFFFFF"/>
   <SolidColorBrush x:Key="Brush.Selected" Color="#24FFFFFF"/>
-  <SolidColorBrush x:Key="Brush.Hairline" Color="#1AFFFFFF"/>
-  <SolidColorBrush x:Key="Brush.HairlineStrong" Color="#2EFFFFFF"/>
-  <SolidColorBrush x:Key="Brush.Bg.Tooltip" Color="#F2101214"/>
+  <SolidColorBrush x:Key="Brush.Hairline" Color="#2EFFFFFF"/>
+  <SolidColorBrush x:Key="Brush.HairlineStrong" Color="#40FFFFFF"/>
+  <SolidColorBrush x:Key="Brush.Popup" Color="#FF212327"/>
+  <SolidColorBrush x:Key="Brush.Bg.Tooltip" Color="#FF101214"/>
 
   <SolidColorBrush x:Key="Brush.Accent" Color="#5865F2"/>
   <SolidColorBrush x:Key="Brush.Accent.Hover" Color="#4752C4"/>

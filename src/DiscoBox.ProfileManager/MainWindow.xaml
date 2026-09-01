@@ -5,17 +5,17 @@
         xmlns:vm="clr-namespace:DiscoBox.ProfileManager.ViewModels"
         xmlns:views="clr-namespace:DiscoBox.ProfileManager.Views"
         Title="DiscoBox Profile Manager"
-        Width="1180" Height="720" MinWidth="920" MinHeight="560"
+        Width="1240" Height="760" MinWidth="980" MinHeight="560"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        Background="{StaticResource Brush.Bg.Base}"
+        Background="{StaticResource Brush.Window}"
         Foreground="{StaticResource Brush.Text.Primary}"
         FontFamily="{StaticResource Font.Primary}"
         FontSize="{StaticResource Size.Body}"
         TextOptions.TextFormattingMode="Display">
 
     <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome CaptionHeight="36" ResizeBorderThickness="6"
+        <shell:WindowChrome CaptionHeight="40" ResizeBorderThickness="6"
                             GlassFrameThickness="1" CornerRadius="0"
                             UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
@@ -37,17 +37,36 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="36"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="{StaticResource Brush.Bg.Deep}">
+        <Grid Grid.Row="0">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                <TextBlock Text="DISCOBOX" FontSize="12" FontWeight="Bold"
-                           Foreground="{StaticResource Brush.Text.Secondary}"/>
-                <TextBlock Text="Profile Manager" FontSize="12" Margin="8,0,0,0"
-                           Foreground="{StaticResource Brush.Text.Muted}"/>
+                <Border Width="20" Height="20" CornerRadius="5" Background="{StaticResource Brush.Accent}">
+                    <TextBlock Text="D" FontSize="11" FontWeight="Bold" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="DiscoBox" FontSize="13" FontWeight="SemiBold" Margin="8,0,0,0"
+                           Foreground="{StaticResource Brush.Text.Primary}" VerticalAlignment="Center"/>
             </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                <RadioButton GroupName="Nav" Style="{StaticResource NavTab}" IsChecked="True"
+                             Command="{Binding NavigateCommand}" CommandParameter="accounts"
+                             Content="Accounts"/>
+                <RadioButton GroupName="Nav" Style="{StaticResource NavTab}"
+                             Command="{Binding NavigateCommand}" CommandParameter="proxies"
+                             Content="Proxies"/>
+                <RadioButton GroupName="Nav" Style="{StaticResource NavTab}"
+                             Command="{Binding NavigateCommand}" CommandParameter="tasks"
+                             Content="Tasks"/>
+                <RadioButton GroupName="Nav" Style="{StaticResource NavTab}"
+                             Command="{Binding NavigateCommand}" CommandParameter="settings"
+                             Content="Settings"/>
+            </StackPanel>
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                         shell:WindowChrome.IsHitTestVisibleInChrome="True">
                 <Button Style="{StaticResource WindowButton}" Content="&#xE921;" Click="Minimize_Click"
@@ -57,67 +76,10 @@
                 <Button Style="{StaticResource WindowCloseButton}" Content="&#xE8BB;" Click="Close_Click"
                         ToolTip="Close"/>
             </StackPanel>
+
+            <Border Style="{StaticResource Divider}" VerticalAlignment="Bottom"/>
         </Grid>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="220"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0" Background="{StaticResource Brush.Bg.Deep}">
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="16,20,16,22">
-                        <Border Width="30" Height="30" CornerRadius="8"
-                                Background="{StaticResource Brush.Accent}">
-                            <TextBlock Text="D" FontSize="16" FontWeight="Bold" Foreground="White"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="DiscoBox" FontSize="15" FontWeight="SemiBold"
-                                       Foreground="{StaticResource Brush.Text.Primary}"/>
-                            <TextBlock Text="PROFILE MANAGER" FontSize="9" Margin="0,1,0,0"
-                                       Foreground="{StaticResource Brush.Text.Muted}"/>
-                        </StackPanel>
-                    </StackPanel>
-
-                    <TextBlock DockPanel.Dock="Bottom" Text="v0.1.0" FontSize="11" Margin="22,0,0,14"
-                               Foreground="{StaticResource Brush.Text.Muted}"/>
-
-                    <StackPanel>
-                        <RadioButton GroupName="Nav" Style="{StaticResource NavItem}" IsChecked="True"
-                                     Command="{Binding NavigateCommand}" CommandParameter="accounts">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE77B;" Style="{StaticResource Text.Icon}" FontSize="16"/>
-                                <TextBlock Text="Accounts" FontSize="13.5" Margin="12,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </RadioButton>
-                        <RadioButton GroupName="Nav" Style="{StaticResource NavItem}"
-                                     Command="{Binding NavigateCommand}" CommandParameter="proxies">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE774;" Style="{StaticResource Text.Icon}" FontSize="16"/>
-                                <TextBlock Text="Proxies" FontSize="13.5" Margin="12,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </RadioButton>
-                        <RadioButton GroupName="Nav" Style="{StaticResource NavItem}"
-                                     Command="{Binding NavigateCommand}" CommandParameter="tasks">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE9D5;" Style="{StaticResource Text.Icon}" FontSize="16"/>
-                                <TextBlock Text="Tasks" FontSize="13.5" Margin="12,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </RadioButton>
-                        <RadioButton GroupName="Nav" Style="{StaticResource NavItem}" Margin="0,16,0,0"
-                                     Command="{Binding NavigateCommand}" CommandParameter="settings">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="&#xE713;" Style="{StaticResource Text.Icon}" FontSize="16"/>
-                                <TextBlock Text="Settings" FontSize="13.5" Margin="12,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </RadioButton>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-
-            <ContentControl Grid.Column="1" Content="{Binding CurrentPage}"/>
-        </Grid>
+        <ContentControl Grid.Row="1" Content="{Binding CurrentPage}"/>
     </Grid>
 </Window>
