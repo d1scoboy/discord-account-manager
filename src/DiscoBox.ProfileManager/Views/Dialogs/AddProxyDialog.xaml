@@ -1,0 +1,39 @@
+<Window x:Class="DiscoBox.ProfileManager.Views.Dialogs.AddProxyDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Style="{StaticResource DialogWindow}"
+        WindowStartupLocation="CenterOwner"
+        Title="Add proxy" Width="460" SizeToContent="Height">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="44" ResizeBorderThickness="0"
+                            GlassFrameThickness="1" CornerRadius="0"
+                            UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+    <Border BorderBrush="{StaticResource Brush.HairlineStrong}" BorderThickness="1">
+    <Grid Margin="20,14,20,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <TextBlock Text="Add proxy" Style="{StaticResource Text.SectionTitle}" VerticalAlignment="Center"/>
+            <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" HorizontalAlignment="Right"
+                    shell:WindowChrome.IsHitTestVisibleInChrome="True" Click="Close_Click"/>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="0,12,0,0">
+            <TextBlock Text="Proxy URL (http:// or socks5://, user:pass@ supported)"
+                       Style="{StaticResource Text.Muted}" Margin="0,0,0,4"/>
+            <TextBox x:Name="UrlBox" FontFamily="{StaticResource Font.Mono}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Style="{StaticResource GhostButton}" Content="Cancel" Click="Close_Click"/>
+            <Button Style="{StaticResource PrimaryButton}" Content="Add" Margin="8,0,0,0" Click="Save_Click"/>
+        </StackPanel>
+    </Grid>
+    </Border>
+</Window>
