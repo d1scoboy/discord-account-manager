@@ -11,6 +11,7 @@
                             GlassFrameThickness="1" CornerRadius="0"
                             UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
+    <Border BorderBrush="{StaticResource Brush.HairlineStrong}" BorderThickness="1">
     <Grid Margin="20,14,20,20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -36,7 +37,7 @@
             </Grid>
             <TextBox Text="{Binding SourceText, UpdateSourceTrigger=PropertyChanged}"
                      FontFamily="Consolas" FontSize="12" AcceptsReturn="True"
-                     Height="150" Margin="0,6,0,0"
+                     Height="150" Margin="0,6,0,0" VerticalContentAlignment="Top"
                      VerticalScrollBarVisibility="Auto" TextWrapping="NoWrap"/>
         </StackPanel>
 
@@ -108,4 +109,5 @@
             </StackPanel>
         </Grid>
     </Grid>
+    </Border>
 </Window>

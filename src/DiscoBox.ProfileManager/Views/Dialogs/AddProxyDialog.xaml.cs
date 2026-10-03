@@ -9,7 +9,10 @@ public partial class AddProxyDialog : Window
         InitializeComponent();
     }
 
-    public string ProxyUrl => UrlBox.Text;
+    public List<string> ProxyUrls => UrlBox.Text
+        .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Where(line => line.Length > 0 && !line.StartsWith('#'))
+        .ToList();
 
     private void Save_Click(object sender, RoutedEventArgs e) => DialogResult = true;
 

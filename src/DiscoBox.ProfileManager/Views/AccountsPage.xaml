@@ -7,6 +7,9 @@
             <MenuItem Header="Open card"
                       Command="{Binding DataContext.OpenCardCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                       CommandParameter="{Binding}"/>
+            <MenuItem Header="Open account in Chrome"
+                      Command="{Binding DataContext.OpenAccountOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                      CommandParameter="{Binding}"/>
             <MenuItem Header="Edit"
                       Command="{Binding DataContext.EditAccountCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                       CommandParameter="{Binding}"/>
@@ -14,14 +17,11 @@
             <MenuItem Header="Check status"
                       Command="{Binding DataContext.CheckOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                       CommandParameter="{Binding}"/>
-            <MenuItem Header="Assign random proxy"
-                      Command="{Binding DataContext.AssignRandomOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                      CommandParameter="{Binding}"/>
             <MenuItem Header="Set proxy..."
                       Command="{Binding DataContext.SetProxyOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                       CommandParameter="{Binding}"/>
-            <MenuItem Header="Release proxy"
-                      Command="{Binding DataContext.ReleaseOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            <MenuItem Header="Use random pool"
+                      Command="{Binding DataContext.UseRandomOneCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                       CommandParameter="{Binding}"/>
             <Separator/>
             <MenuItem Header="Delete"
@@ -67,8 +67,6 @@
                 <Button Content="Select shown" Click="SelectShown_Click" ToolTip="Select every visible account"/>
                 <Button Content="Check" Margin="8,0,0,0" IsEnabled="{Binding HasSelection}"
                         Command="{Binding CheckSelectedCommand}"/>
-                <Button Content="Assign proxy" Margin="8,0,0,0" IsEnabled="{Binding HasSelection}"
-                        Command="{Binding AssignRandomCommand}"/>
                 <Button Content="Set proxy" Margin="8,0,0,0" IsEnabled="{Binding HasSelection}"
                         Command="{Binding SetProxyCommand}"/>
                 <Button Content="Open account" Margin="8,0,0,0" IsEnabled="{Binding HasSelection}"
@@ -85,6 +83,7 @@
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="230"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="ACCOUNT" FontSize="11" FontWeight="SemiBold"
                        Foreground="{StaticResource Brush.Text.Muted}" Margin="0,0,0,6"/>
@@ -95,6 +94,8 @@
             <TextBlock Grid.Column="3" Text="CHECKED" FontSize="11" FontWeight="SemiBold"
                        Foreground="{StaticResource Brush.Text.Muted}" Margin="10,0,0,6"/>
             <TextBlock Grid.Column="4" Text="PROXY" FontSize="11" FontWeight="SemiBold"
+                       Foreground="{StaticResource Brush.Text.Muted}" Margin="10,0,0,6"/>
+            <TextBlock Grid.Column="5" Text="LAST TASK" FontSize="11" FontWeight="SemiBold"
                        Foreground="{StaticResource Brush.Text.Muted}" Margin="10,0,0,6"/>
         </Grid>
 
@@ -150,15 +151,21 @@
                                          SelectionChanged="SectionList_SelectionChanged"
                                          MouseDoubleClick="SectionList_MouseDoubleClick"
                                          Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                            <Setter Property="ContextMenu" Value="{StaticResource RowMenu}"/>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid ContextMenu="{StaticResource RowMenu}">
+                                            <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="200"/>
                                                     <ColumnDefinition Width="110"/>
                                                     <ColumnDefinition Width="200"/>
                                                     <ColumnDefinition Width="120"/>
                                                     <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="230"/>
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Grid.Column="0" Text="{Binding Username}"
                                                            Style="{StaticResource Text.Body}" VerticalAlignment="Center"/>
@@ -171,6 +178,18 @@
                                                            VerticalAlignment="Center"/>
                                                 <TextBlock Grid.Column="4" Text="{Binding ProxyLabel}"
                                                            Style="{StaticResource Text.Mono}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="5" Orientation="Horizontal" Margin="10,0,0,0"
+                                                            VerticalAlignment="Center"
+                                                            Visibility="{Binding HasLastTask, Converter={StaticResource BoolToVis}}">
+                                                    <ui:StatusChip Status="{Binding LastTaskResult}" />
+                                                    <TextBlock Text="{Binding LastTaskName}" Style="{StaticResource Text.Mono}"
+                                                               Margin="8,0,0,0"/>
+                                                    <TextBlock Text="{Binding LastTaskTime}" Style="{StaticResource Text.Muted}"
+                                                               Margin="8,0,0,0"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="5" Text="—" Style="{StaticResource Text.Muted}"
+                                                           Margin="10,0,0,0" VerticalAlignment="Center"
+                                                           Visibility="{Binding HasLastTask, Converter={StaticResource BoolToVisInverse}}"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
@@ -183,9 +202,9 @@
 
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                         Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}">
-                <TextBlock Text="No accounts match the current filters."
+                <TextBlock Text="{Binding EmptyTitle}"
                            Style="{StaticResource Text.SectionTitle}" HorizontalAlignment="Center"/>
-                <TextBlock Text="Clear the filters, or import a list to fill this view."
+                <TextBlock Text="{Binding EmptyHint}"
                            Style="{StaticResource Text.Muted}" HorizontalAlignment="Center" Margin="0,6,0,14"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Clear filters" Command="{Binding ClearFiltersCommand}"/>

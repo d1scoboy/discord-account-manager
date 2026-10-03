@@ -8,6 +8,7 @@ namespace DiscoBox.ProfileManager.Services;
 
 public static class AppServices
 {
+    // TODO proper di container once services grow past this singleton bag
     public static string DataDir { get; private set; } = "";
 
     public static SecretMasker Masker { get; private set; } = new();
@@ -29,6 +30,10 @@ public static class AppServices
     public static ProxyResolver Resolver { get; private set; } = null!;
 
     public static JobEngine Engine { get; private set; } = null!;
+
+    public static Core.Chrome.ProfileStore Profiles { get; private set; } = null!;
+
+    public static Core.Chrome.OpenAccountService OpenAccount { get; private set; } = null!;
 
     public static AppSettings Settings { get; private set; } = new();
 
@@ -59,6 +64,22 @@ public static class AppServices
         Engine.Register(new CheckStatusAction());
         Engine.Register(new VerifyProxyAction(Pool));
         Engine.LoadExisting();
+
+        Profiles = new Core.Chrome.ProfileStore(DataDir);
+        OpenAccount = new Core.Chrome.OpenAccountService(
+            Profiles,
+            new Core.Chrome.ChromeLauncher(Logger),
+            new Core.Chrome.DiscordAuthInjector(Logger),
+            Logger,
+            () => Settings.ChromePath,
+            () => Settings.GostPath,
+            (account, newToken) =>
+            {
+                account.Token = newToken;
+                Masker.Register(newToken);
+                PersistAccounts();
+                Logger.Info("storage", $"rotated token stored for {account.Username}");
+            });
 
         Accounts.Clear();
         Accounts.AddRange(AccountStore.Load());

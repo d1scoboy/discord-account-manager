@@ -29,6 +29,9 @@ public partial class AccountRowViewModel : ObservableObject
     private string proxyLabel = "";
 
     [ObservableProperty]
+    private string proxyFull = "";
+
+    [ObservableProperty]
     private string status = "unchecked";
 
     [ObservableProperty]
@@ -78,9 +81,16 @@ public partial class AccountRowViewModel : ObservableObject
         Username = Model.Username;
         UserId = Model.UserId;
         TokenMasked = AccountsPageViewModel.MaskToken(Model.Token);
-        ProxyLabel = Model.ProxyMode == ProxyMode.Manual && !string.IsNullOrWhiteSpace(Model.ProxyUrl)
-            ? Model.ProxyUrl!
-            : "random from pool";
+        if (Model.ProxyMode == ProxyMode.Manual && !string.IsNullOrWhiteSpace(Model.ProxyUrl))
+        {
+            ProxyFull = Model.ProxyUrl!;
+            ProxyLabel = "manual";
+        }
+        else
+        {
+            ProxyFull = "";
+            ProxyLabel = "random from pool";
+        }
         Status = Model.Status.ToString().ToLowerInvariant();
         StatusText = Model.Status.ToString();
         LastChecked = TimeAgo.Text(Model.LastChecked);
@@ -254,6 +264,7 @@ public partial class AccountsPageViewModel : ObservableObject
             rows.Add(new AccountRowViewModel(model));
         }
 
+        AppServices.OpenAccount.SessionClosed += OnSessionClosed;
         RefreshFilters();
         ApplyFilters();
     }
@@ -440,14 +451,21 @@ public partial class AccountsPageViewModel : ObservableObject
         {
             Owner = System.Windows.Application.Current?.MainWindow,
         };
-        if (dialog.ShowDialog() != true || dialog.ProxyUrl.Trim().Length == 0)
+        if (dialog.ShowDialog() != true)
         {
+            return;
+        }
+
+        var urls = dialog.ProxyUrls;
+        if (urls.Count != 1)
+        {
+            FooterMessage = "Put exactly one proxy line to assign it to accounts";
             return;
         }
 
         try
         {
-            Core.Net.ProxyEndpoint.Parse(dialog.ProxyUrl.Trim());
+            Core.Net.ProxyEndpoint.Parse(urls[0]);
         }
         catch (FormatException exception)
         {
@@ -458,8 +476,8 @@ public partial class AccountsPageViewModel : ObservableObject
         foreach (var row in targets)
         {
             row.Model.ProxyMode = ProxyMode.Manual;
-            row.Model.ProxyUrl = dialog.ProxyUrl.Trim();
-            AppServices.Masker.Register(Core.Net.ProxyEndpoint.Parse(dialog.ProxyUrl.Trim()).Password);
+            row.Model.ProxyUrl = urls[0];
+            AppServices.Masker.Register(Core.Net.ProxyEndpoint.Parse(urls[0]).Password);
         }
 
         AppServices.PersistAccounts();
@@ -490,39 +508,49 @@ public partial class AccountsPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OpenAccount()
-    {
-        if (SelectedAccount is null)
-        {
-            FooterMessage = "Select an account to open";
-            return;
-        }
-
-        OpenAccountFor(SelectedAccount);
-    }
+    private Task OpenAccountAsync() =>
+        SelectedAccount is null ? Task.CompletedTask : OpenAccountFor(SelectedAccount);
 
     [RelayCommand]
-    private void OpenAccountOne(AccountRowViewModel row) => OpenAccountFor(row);
+    private Task OpenAccountOneAsync(AccountRowViewModel row) => OpenAccountFor(row);
 
-    private string? openSession;
+    private readonly Dictionary<string, Core.Proxy.ResolvedProxy> openProxies = new();
 
-    public void OpenAccountFor(AccountRowViewModel row)
+    public async Task OpenAccountFor(AccountRowViewModel row)
     {
-        if (openSession == row.Username)
+        var service = AppServices.OpenAccount;
+        if (service.CurrentAccountId == row.Model.Id)
         {
-            openSession = null;
-            FooterMessage = $"Chrome session for {row.Username} closed";
+            await service.CloseAsync();
+            FooterMessage = $"Chrome session for {row.Username} is closing";
             return;
         }
 
-        if (openSession is not null)
+        var proxy = AppServices.Resolver.Resolve(row.Model);
+        var (ok, message) = await service.OpenAsync(row.Model, proxy, CancellationToken.None);
+        if (ok && proxy is not null)
         {
-            FooterMessage = $"Close the open session ({openSession}) first: one Chrome session at a time";
-            return;
+            openProxies[row.Model.Id] = proxy;
+        }
+        else if (proxy is not null)
+        {
+            AppServices.Resolver.Release(proxy);
         }
 
-        openSession = row.Username;
-        FooterMessage = $"Chrome session opened for {row.Username} (real launch in step 19)";
+        FooterMessage = message;
+    }
+
+    private void OnSessionClosed(string accountId)
+    {
+        System.Windows.Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
+        {
+            if (openProxies.Remove(accountId, out var proxy))
+            {
+                AppServices.Resolver.Release(proxy);
+            }
+
+            FooterMessage = "Chrome session closed, profile packed";
+        }));
     }
 
     [RelayCommand]

@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DiscoBox.Core.Parsing;
 using Microsoft.Win32;
 
 namespace DiscoBox.ProfileManager.ViewModels;
@@ -26,14 +26,6 @@ public partial class ImportLineViewModel : ObservableObject
 
 public partial class ImportViewModel : ObservableObject
 {
-    private static readonly Regex TokenRegex =
-        new(@"^[\w-]{20,30}\.[\w-]{4,10}\.[\w-]{20,40}$", RegexOptions.Compiled);
-
-    private static readonly Regex ProxyRegex =
-        new(@"^(https?|socks5)://|^[\w.-]+:\d{2,5}(:|$)", RegexOptions.Compiled);
-
-    private readonly HashSet<string> existingTokens;
-
     [ObservableProperty]
     private string sourceText = "";
 
@@ -47,7 +39,7 @@ public partial class ImportViewModel : ObservableObject
     private string tags = "";
 
     [ObservableProperty]
-    private string proxyPolicy = "Random from pool";
+    private string proxyPolicy = "Random from pool (default)";
 
     [ObservableProperty]
     private bool hasReport;
@@ -66,19 +58,21 @@ public partial class ImportViewModel : ObservableObject
 
     public IReadOnlyList<string> ProxyPolicies { get; } = new[]
     {
-        "Random from pool", "As in file", "None",
+        "Random from pool (default)", "As in file (manual)",
     };
 
     public bool CanImport => HasReport && Report.Any(l => l.Action is "new" or "update");
 
-    public List<ParsedAccount> Applied { get; } = new();
+    public List<ParsedLine> Applied { get; } = new();
 
     public ImportViewModel(IEnumerable<string> groups, IEnumerable<string> knownTokens)
     {
         Groups = new ObservableCollection<string>(groups);
-        existingTokens = new HashSet<string>(knownTokens);
+        existingTokens = knownTokens.ToList();
         Tags = $"import:{DateTime.Now:yyyy-MM-dd}";
     }
+
+    private readonly List<string> existingTokens;
 
     partial void OnHasReportChanged(bool value) => OnPropertyChanged(nameof(CanImport));
 
@@ -100,49 +94,73 @@ public partial class ImportViewModel : ObservableObject
     {
         Report.Clear();
         Applied.Clear();
-        var seen = new HashSet<string>();
+
+        var formatKey = Format switch
+        {
+            "Auto-detect" => AccountLineParser.FormatAuto,
+            "token" => AccountLineParser.FormatToken,
+            "email:password:token" => AccountLineParser.FormatEmailPasswordToken,
+            "token:proxy" => AccountLineParser.FormatTokenProxy,
+            _ => AccountLineParser.FormatEmailPasswordTokenProxy,
+        };
+
+        var lines = AccountLineParser.ParseAll(SourceText, formatKey);
+        AccountLineParser.MarkDuplicates(lines, existingTokens);
+
         var counts = new Dictionary<string, int>
         {
             ["new"] = 0, ["update"] = 0, ["duplicate"] = 0, ["error"] = 0,
         };
 
-        var lineNumber = 0;
-        foreach (var rawLine in SourceText.Split('\n'))
+        foreach (var line in lines)
         {
-            lineNumber++;
-            var line = rawLine.Trim();
-            if (line.Length == 0 || line.StartsWith('#'))
+            if (line.Raw.Length == 0 || line.Raw.StartsWith('#'))
             {
                 continue;
             }
 
-            var parsed = Parse(line);
-            if (parsed is null)
+            string action;
+            string actionText;
+            string detail;
+            if (!line.Ok)
             {
-                Add(lineNumber, line, "error", "Error", "No token recognized in this line");
-                counts["error"]++;
-                continue;
+                action = "error";
+                actionText = "Error";
+                detail = line.Error ?? "parse failed";
             }
-
-            if (!seen.Add(parsed.Token))
+            else if (line.DuplicateInFile)
             {
-                Add(lineNumber, line, "duplicate", "Duplicate", "Same token earlier in this file");
-                counts["duplicate"]++;
-                continue;
+                action = "duplicate";
+                actionText = "Duplicate";
+                detail = "same token earlier in this file";
             }
-
-            if (existingTokens.Contains(parsed.Token))
+            else if (line.DuplicateStored)
             {
-                Add(lineNumber, line, "update", "Update", Fields(parsed));
-                counts["update"]++;
+                action = "update";
+                actionText = "Update";
+                detail = Fields(line);
             }
             else
             {
-                Add(lineNumber, line, "new", "New", Fields(parsed));
-                counts["new"]++;
+                action = "new";
+                actionText = "New";
+                detail = Fields(line);
             }
 
-            Applied.Add(parsed);
+            counts[action]++;
+            Report.Add(new ImportLineViewModel
+            {
+                LineNumber = line.LineNumber,
+                Raw = line.Raw.Length > 60 ? line.Raw[..60] + "…" : line.Raw,
+                Action = action,
+                ActionText = actionText,
+                Detail = detail,
+            });
+
+            if (line.Ok && !line.DuplicateInFile)
+            {
+                Applied.Add(line);
+            }
         }
 
         Summary = $"{counts["new"]} new, {counts["update"]} update, " +
@@ -150,121 +168,24 @@ public partial class ImportViewModel : ObservableObject
         HasReport = true;
     }
 
-    private void Add(int lineNumber, string raw, string action, string actionText, string detail) =>
-        Report.Add(new ImportLineViewModel
-        {
-            LineNumber = lineNumber,
-            Raw = raw.Length > 60 ? raw[..60] + "…" : raw,
-            Action = action,
-            ActionText = actionText,
-            Detail = detail,
-        });
-
-    private static string Fields(ParsedAccount p)
+    private static string Fields(ParsedLine parsed)
     {
         var parts = new List<string> { "token ok" };
-        if (p.Email is not null)
+        if (parsed.Email is not null)
         {
             parts.Add("email");
         }
 
-        if (p.Password is not null)
+        if (parsed.Password is not null)
         {
             parts.Add("password");
         }
 
-        if (p.Proxy is not null)
+        if (parsed.Proxy is not null)
         {
             parts.Add("proxy");
         }
 
         return string.Join(", ", parts);
     }
-
-    private ParsedAccount? Parse(string line)
-    {
-        var parts = line.Split(':');
-        var result = new ParsedAccount();
-
-        if (Format == "token")
-        {
-            if (!TokenRegex.IsMatch(line))
-            {
-                return null;
-            }
-
-            result.Token = line;
-            return result;
-        }
-
-        if (Format == "email:password:token")
-        {
-            if (parts.Length < 3)
-            {
-                return null;
-            }
-
-            result.Email = parts[0];
-            result.Password = string.Join(':', parts[1..^1]);
-            result.Token = parts[^1];
-            return TokenRegex.IsMatch(result.Token) ? result : null;
-        }
-
-        if (Format == "token:proxy")
-        {
-            if (parts.Length < 2 || !TokenRegex.IsMatch(parts[0]))
-            {
-                return null;
-            }
-
-            result.Token = parts[0];
-            result.Proxy = string.Join(':', parts[1..]);
-            return result;
-        }
-
-        if (Format == "email:password:token:proxy")
-        {
-            if (parts.Length < 4)
-            {
-                return null;
-            }
-
-            result.Email = parts[0];
-            result.Password = string.Join(':', parts[1..^2]);
-            result.Token = parts[^2];
-            result.Proxy = parts[^1];
-            return TokenRegex.IsMatch(result.Token) ? result : null;
-        }
-
-        foreach (var part in parts)
-        {
-            var trimmed = part.Trim();
-            if (TokenRegex.IsMatch(trimmed))
-            {
-                result.Token = trimmed;
-            }
-            else if (trimmed.Contains('@'))
-            {
-                result.Email = trimmed;
-            }
-            else if (ProxyRegex.IsMatch(trimmed))
-            {
-                result.Proxy = trimmed;
-            }
-            else
-            {
-                result.Password = trimmed;
-            }
-        }
-
-        return result.Token is null ? null : result;
-    }
-}
-
-public class ParsedAccount
-{
-    public string Token { get; set; } = "";
-    public string? Email { get; set; }
-    public string? Password { get; set; }
-    public string? Proxy { get; set; }
 }
