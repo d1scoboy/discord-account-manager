@@ -6,153 +6,162 @@
         Style="{StaticResource DialogWindow}"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Title="Account card" Width="640" Height="560">
+        Title="Account card" Width="620" SizeToContent="Height" MaxHeight="720">
     <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome CaptionHeight="56" ResizeBorderThickness="0"
+        <shell:WindowChrome CaptionHeight="52" ResizeBorderThickness="0"
                             GlassFrameThickness="1" CornerRadius="0"
                             UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
-    <Grid Margin="20,12,20,16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Border BorderBrush="{StaticResource Brush.HairlineStrong}" BorderThickness="1">
+        <Grid Margin="18,10,18,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Border Width="36" Height="36" CornerRadius="18"
-                        Background="{StaticResource Brush.Hover}"
-                        BorderBrush="{StaticResource Brush.Hairline}" BorderThickness="1">
-                    <TextBlock Text="{Binding Row.Initials}" FontSize="14" FontWeight="SemiBold"
-                               Foreground="{StaticResource Brush.Text.Primary}"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Border>
-                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Row.Username}" Style="{StaticResource Text.SectionTitle}"/>
-                    <TextBlock Text="{Binding Row.UserId}" Style="{StaticResource Text.Mono}" FontSize="11"/>
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="34" Height="34" CornerRadius="17"
+                            Background="{StaticResource Brush.Hover}"
+                            BorderBrush="{StaticResource Brush.Hairline}" BorderThickness="1">
+                        <TextBlock Text="{Binding Row.Initials}" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Brush.Text.Primary}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Row.Username}" Style="{StaticResource Text.SectionTitle}"/>
+                        <TextBlock Text="{Binding Row.UserId}" Style="{StaticResource Text.Mono}" FontSize="11"/>
+                    </StackPanel>
+                    <ui:StatusChip Status="{Binding Row.Status}" Text="{Binding Row.StatusText}" Margin="12,0,0,0"/>
                 </StackPanel>
-                <ui:StatusChip Status="{Binding Row.Status}" Text="{Binding Row.StatusText}" Margin="12,0,0,0"/>
-            </StackPanel>
-            <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    shell:WindowChrome.IsHitTestVisibleInChrome="True" Click="Close_Click"/>
-        </Grid>
+                <Button Style="{StaticResource IconButton}" Content="&#xE8BB;" HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True" Click="Close_Click"/>
+            </Grid>
 
-        <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTab}" Margin="0,10,0,0">
-            <TabItem Header="Info">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="90"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Token" Style="{StaticResource Text.Muted}"/>
-                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                        <TextBlock Text="{Binding Row.TokenMasked}" Style="{StaticResource Text.Mono}"/>
-                        <Button Style="{StaticResource IconButton}" Content="&#xE8C8;" Width="22" Height="22"
-                                Margin="6,-3,0,0" Click="CopyToken_Click" ToolTip="Copy token"/>
-                    </StackPanel>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Proxy" Style="{StaticResource Text.Muted}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Row.ProxyLabel}" Style="{StaticResource Text.Mono}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Group" Style="{StaticResource Text.Muted}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Row.Group}" Style="{StaticResource Text.Body}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Tags" Style="{StaticResource Text.Muted}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Row.Tags}" Style="{StaticResource Text.Body}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Checked" Style="{StaticResource Text.Muted}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Row.LastChecked}" Style="{StaticResource Text.Body}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Email" Style="{StaticResource Text.Muted}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Email, FallbackValue='—'}" Style="{StaticResource Text.Body}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Notes" Style="{StaticResource Text.Muted}" Margin="0,8,0,0"/>
-                    <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Row.Notes}" Style="{StaticResource Text.Secondary}"
-                               TextWrapping="Wrap" Margin="0,8,0,0"/>
-                </Grid>
-            </TabItem>
+            <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTab}" Margin="0,8,0,0">
+                <TabItem Header="Info">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Token" Style="{StaticResource Text.Muted}"/>
+                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                                <TextBlock Text="{Binding Row.TokenMasked}" Style="{StaticResource Text.Mono}"/>
+                                <Button Style="{StaticResource IconButton}" Content="&#xE8C8;" Width="22" Height="22"
+                                        Margin="6,-3,0,0" Click="CopyToken_Click" ToolTip="Copy token"/>
+                            </StackPanel>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Proxy" Style="{StaticResource Text.Muted}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Row.ProxyFull}" Style="{StaticResource Text.Mono}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Group" Style="{StaticResource Text.Muted}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Row.Group}" Style="{StaticResource Text.Body}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Tags" Style="{StaticResource Text.Muted}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Row.Tags}" Style="{StaticResource Text.Body}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Checked" Style="{StaticResource Text.Muted}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Row.LastChecked}" Style="{StaticResource Text.Body}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Notes" Style="{StaticResource Text.Muted}" Margin="0,7,0,0"/>
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Row.Notes}" Style="{StaticResource Text.Secondary}"
+                                       TextWrapping="Wrap" Margin="0,7,0,0"/>
+                        </Grid>
 
-            <TabItem Header="Actions">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource PrimaryButton}" Content="Check status"
-                                Command="{Binding CheckCommand}"/>
-                        <Button Content="Assign random proxy" Margin="8,0,0,0" Command="{Binding AssignRandomCommand}"/>
-                        <Button Content="Set proxy..." Margin="8,0,0,0" Command="{Binding SetProxyCommand}"/>
-                    </StackPanel>
-                    <Border Style="{StaticResource Divider}" Margin="0,14"/>
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="Release proxy" Command="{Binding ReleaseProxyCommand}"/>
-                        <Button Style="{StaticResource DangerButton}" Content="Delete account" Margin="8,0,0,0"
-                                Command="{Binding DeleteCommand}"/>
-                    </StackPanel>
-                    <TextBlock Text="Destructive actions ask for confirmation."
-                               Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,0"/>
-                </StackPanel>
-            </TabItem>
+                        <Border Style="{StaticResource Divider}" Margin="0,14"/>
 
-            <TabItem Header="Edit">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="16"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="Token" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,0,0,4"/>
-                        <TextBox Text="{Binding Token, UpdateSourceTrigger=PropertyChanged}" FontFamily="{StaticResource Font.Mono}" FontSize="12"/>
-                        <TextBlock Text="Group" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
-                        <ComboBox ItemsSource="{Binding Groups}" SelectedItem="{Binding Group}"/>
-                        <TextBlock Text="Notes" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
-                        <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="70"
-                                 VerticalScrollBarVisibility="Auto"/>
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource PrimaryButton}"
+                                    Content="Open in Chrome" Command="{Binding OpenInChromeCommand}"/>
+                            <Button Grid.Row="0" Grid.Column="2" Content="Check status" Command="{Binding CheckCommand}"/>
+                            <Button Grid.Row="1" Grid.Column="0" Margin="0,8,0,0"
+                                    Content="Set proxy..." Command="{Binding SetProxyCommand}"/>
+                            <Button Grid.Row="1" Grid.Column="2" Margin="0,8,0,0"
+                                    Content="Use random pool" Command="{Binding UseRandomCommand}"/>
+                            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                                    Style="{StaticResource DangerButton}" Margin="0,8,0,0"
+                                    Content="Delete account" Command="{Binding DeleteCommand}"/>
+                        </Grid>
                     </StackPanel>
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Text="Tags (comma separated)" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,0,0,4"/>
-                        <TextBox Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Text="Proxy mode" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
-                        <ComboBox ItemsSource="{Binding ProxyModes}" SelectedItem="{Binding ProxyMode}"/>
-                        <TextBlock Text="Proxy URL (manual mode)" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
-                        <TextBox Text="{Binding ProxyUrl, UpdateSourceTrigger=PropertyChanged}"
-                                 FontFamily="{StaticResource Font.Mono}" FontSize="12"
-                                 IsEnabled="{Binding IsManual}"/>
+                </TabItem>
+
+                <TabItem Header="Edit">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="16"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Token" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,0,0,4"/>
+                                <TextBox Text="{Binding Token, UpdateSourceTrigger=PropertyChanged}" FontFamily="{StaticResource Font.Mono}" FontSize="12"/>
+                                <TextBlock Text="Email" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
+                                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="Password" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
+                                <PasswordBox x:Name="EditPasswordBox" PasswordChanged="EditPasswordBox_PasswordChanged"/>
+                                <TextBlock Text="Group" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
+                                <ComboBox ItemsSource="{Binding Groups}" SelectedItem="{Binding Group}"/>
+                                <TextBlock Text="Notes" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
+                                <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="64"
+                                         VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Tags (comma separated)" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,0,0,4"/>
+                                <TextBox Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="Proxy mode" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
+                                <ComboBox ItemsSource="{Binding ProxyModes}" SelectedItem="{Binding ProxyMode}"/>
+                                <TextBlock Text="Proxy URL (manual mode)" Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,10,0,4"/>
+                                <TextBox Text="{Binding ProxyUrl, UpdateSourceTrigger=PropertyChanged}"
+                                         FontFamily="{StaticResource Font.Mono}" FontSize="12"
+                                         IsEnabled="{Binding IsManual}"/>
+                            </StackPanel>
+                        </Grid>
                         <Button Style="{StaticResource PrimaryButton}" Content="Save changes" Margin="0,14,0,0"
-                                HorizontalAlignment="Left" Command="{Binding SaveCommand}"/>
+                                HorizontalAlignment="Right" Command="{Binding SaveCommand}"/>
                     </StackPanel>
-                </Grid>
-            </TabItem>
+                </TabItem>
 
-            <TabItem Header="Log">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" ItemsSource="{Binding Log}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="80"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource Text.Mono}"/>
-                                    <ui:StatusChip Grid.Column="1" Status="{Binding Result}" Text="{Binding ResultText}"/>
-                                    <TextBlock Grid.Column="2" Text="{Binding Time}" Style="{StaticResource Text.Muted}"
-                                               HorizontalAlignment="Right"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                    <TextBlock Grid.Row="1" Text="Full per-account log file lands with real storage (step 8)."
-                               Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,8,0,0"/>
-                </Grid>
-            </TabItem>
-        </TabControl>
-    </Grid>
+                <TabItem Header="Log">
+                    <StackPanel>
+                        <ListBox ItemsSource="{Binding Log}" Height="200">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource Text.Mono}"/>
+                                        <ui:StatusChip Grid.Column="1" Status="{Binding Result}" Text="{Binding ResultText}"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Time}" Style="{StaticResource Text.Muted}"
+                                                   HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBlock Text="Only the last 20 events per account are kept."
+                                   Style="{StaticResource Text.Muted}" FontSize="11" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Border>
 </Window>

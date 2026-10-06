@@ -13,7 +13,11 @@ public partial class AccountCardDialog : Window
         vm = viewModel;
         DataContext = vm;
         vm.Close = () => DialogResult = true;
+        EditPasswordBox.Password = vm.Password;
     }
+
+    private void EditPasswordBox_PasswordChanged(object sender, RoutedEventArgs e) =>
+        vm.Password = EditPasswordBox.Password;
 
     private void CopyToken_Click(object sender, RoutedEventArgs e) =>
         Clipboard.SetText(vm.Row.TokenMasked);

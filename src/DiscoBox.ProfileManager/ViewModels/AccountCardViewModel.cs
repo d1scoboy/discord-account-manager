@@ -72,7 +72,7 @@ public partial class AccountCardViewModel : ObservableObject
     private Task CheckAsync() => page.RunJobAsync("check_status", new[] { Row });
 
     [RelayCommand]
-    private void OpenInChrome() => page.OpenAccountFor(Row);
+    private Task OpenInChromeAsync() => page.OpenAccountFor(Row);
 
     [RelayCommand]
     private void SetProxy() => page.SetProxyFor(new[] { Row });
