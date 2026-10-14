@@ -11,7 +11,8 @@
     <Setter Property="BorderBrush" Value="{StaticResource Brush.Hairline}"/>
     <Setter Property="CaretBrush" Value="{StaticResource Brush.Text.Primary}"/>
     <Setter Property="SelectionBrush" Value="{StaticResource Brush.Accent}"/>
-    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="Padding" Value="8,4"/>
+    <Setter Property="Height" Value="34"/>
     <Setter Property="FontSize" Value="{StaticResource Size.Body}"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -25,7 +26,8 @@
                   CornerRadius="4"
                   Padding="{TemplateBinding Padding}"
                   SnapsToDevicePixels="True">
-            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+            <ScrollViewer x:Name="PART_ContentHost"
+                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -49,7 +51,8 @@
     <Setter Property="BorderBrush" Value="{StaticResource Brush.Hairline}"/>
     <Setter Property="CaretBrush" Value="{StaticResource Brush.Text.Primary}"/>
     <Setter Property="SelectionBrush" Value="{StaticResource Brush.Accent}"/>
-    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="Padding" Value="8,4"/>
+    <Setter Property="Height" Value="34"/>
     <Setter Property="FontSize" Value="{StaticResource Size.Body}"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -63,7 +66,8 @@
                   CornerRadius="4"
                   Padding="{TemplateBinding Padding}"
                   SnapsToDevicePixels="True">
-            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+            <ScrollViewer x:Name="PART_ContentHost"
+                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -81,7 +85,8 @@
   <Style TargetType="ComboBox">
     <Setter Property="Background" Value="{StaticResource Brush.Input}"/>
     <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}"/>
-    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="Padding" Value="8,4"/>
+    <Setter Property="Height" Value="34"/>
     <Setter Property="FontSize" Value="{StaticResource Size.Body}"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="Template">
@@ -149,7 +154,7 @@
 
   <Style TargetType="ComboBoxItem">
     <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}"/>
-    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="Padding" Value="8,4"/>
     <Setter Property="FontSize" Value="{StaticResource Size.Body}"/>
     <Setter Property="Cursor" Value="Hand"/>
     <Setter Property="Template">
