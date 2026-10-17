@@ -1,5 +1,9 @@
+using System.Text.Json.Serialization;
+using DiscoBox.Core.Storage;
+
 namespace DiscoBox.Core.Models;
 
+[JsonConverter(typeof(LenientEnumConverter<AccountStatus>))]
 public enum AccountStatus
 {
     Unchecked,
@@ -11,12 +15,14 @@ public enum AccountStatus
     Error,
 }
 
+[JsonConverter(typeof(LenientEnumConverter<ProxyMode>))]
 public enum ProxyMode
 {
     Random,
     Manual,
 }
 
+[JsonConverter(typeof(LenientEnumConverter<ProxyStatus>))]
 public enum ProxyStatus
 {
     Valid,
@@ -24,6 +30,7 @@ public enum ProxyStatus
     Dead,
 }
 
+[JsonConverter(typeof(LenientEnumConverter<RunStatus>))]
 public enum RunStatus
 {
     Pending,
@@ -33,6 +40,7 @@ public enum RunStatus
     Skipped,
 }
 
+[JsonConverter(typeof(LenientEnumConverter<JobStatus>))]
 public enum JobStatus
 {
     Queued,

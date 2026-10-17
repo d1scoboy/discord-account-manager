@@ -29,7 +29,6 @@ public static class JsonStore
     private static readonly JsonSerializerOptions Options = new()
     {
         WriteIndented = true,
-        Converters = { new JsonStringEnumConverter() },
     };
 
     public static T Load<T>(string path, T fallback) where T : class
@@ -52,6 +51,7 @@ public static class JsonStore
 
     public static void Save<T>(string path, T value)
     {
+        // ugly but working: full file rewrite on every save, lists stay small enough for this to be fine
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         var temp = path + ".tmp";
         File.WriteAllText(temp, JsonSerializer.Serialize(value, Options));
