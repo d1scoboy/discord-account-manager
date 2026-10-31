@@ -36,8 +36,8 @@ Stack:
 
 ## Install
 
-Get the self-contained zip from the Releases page (link lands after the first
-publish), unpack, run DiscoBox.ProfileManager.exe.
+Get the self-contained zip from the [Releases page](https://github.com/d1scoboy/discord-account-manager/releases),
+unpack, run DiscoBox.ProfileManager.exe.
 
 Also you can build from source:
 
