@@ -1,4 +1,4 @@
-# DiscoBox Profile Manager
+# Discord Account Manager
 
 ![demo](img/demo.gif)
 
